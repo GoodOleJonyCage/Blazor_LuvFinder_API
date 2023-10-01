@@ -151,7 +151,7 @@ namespace LuvFinder_API.Controllers
         {
             var userID = await db.Users.Where(x => x.Username == username).Select(x => x.Id).SingleOrDefaultAsync();
             return userID;
-        }
+        } 
 
         [NonActionAttribute]
         public bool UserExists(LuvFinder_ViewModels.User user)
