@@ -227,7 +227,7 @@ namespace LuvFinder_API.Controllers
             LuvFinder_ViewModels.UserInfo? userinfo = GetUserInfo(userID);
 
             if (userinfo == null)
-                return BadRequest("User profile not found");
+                return BadRequest("User profile not found"); 
 
             return Ok(userinfo);
         }
