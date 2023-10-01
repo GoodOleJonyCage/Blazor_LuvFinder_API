@@ -17,7 +17,7 @@ namespace LuvFinder_API.Controllers
     [AllowAnonymous]
     [ApiController]
     [Route("[controller]")]
-    public class ProfileController : ControllerBase
+    public class ProfileController : ControllerBase 
     {
         //public IActionResult Index()
         //{
@@ -34,59 +34,59 @@ namespace LuvFinder_API.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
 
-        //[NonActionAttribute]
-        //private List<ProfileQuestion> GetProfileQuestions()
-        //{
-        //    List<LuvFinder_ViewModels.ProfileQuestion> lst = new List<LuvFinder_ViewModels.ProfileQuestion>();
+        [NonActionAttribute]
+        private List<ProfileQuestion> GetProfileQuestions()
+        {
+            List<LuvFinder_ViewModels.ProfileQuestion> lst = new List<LuvFinder_ViewModels.ProfileQuestion>();
 
-        //    lst = db.Profiles
-        //        .OrderBy(o => o.Order)
-        //        .Select(profilequestion =>
-        //    new LuvFinder_ViewModels.ProfileQuestion()
-        //    {
-        //        ID = profilequestion.Id,
-        //        Question = new LuvFinder_ViewModels.Question()
-        //        {
-        //            QuestionID = profilequestion.QuestionId,
-        //            Text = profilequestion.Question.Text,
-        //            ShortDesc = profilequestion.Question.ShortDesc,
-        //            QuestionTypeID = profilequestion.Question.QuestionType,
-        //            QuestionType = (LuvFinder_ViewModels.QuestionType)profilequestion.Question.QuestionType,
-        //            Answers = profilequestion.Question.Answers
-        //                .Select(answer => new LuvFinder_ViewModels.Answer()
-        //                {
-        //                    ID = answer.Id,
-        //                    Text = answer.Text,
-        //                })
-        //                .ToList()
-        //        }
-        //    })
-        //    .ToList();
-        //    return lst;
-        //}
+            lst = db.Profiles
+                .OrderBy(o => o.Order)
+                .Select(profilequestion =>
+            new LuvFinder_ViewModels.ProfileQuestion()
+            {
+                ID = profilequestion.Id,
+                Question = new LuvFinder_ViewModels.Question()
+                {
+                    QuestionID = profilequestion.QuestionId,
+                    Text = profilequestion.Question.Text,
+                    ShortDesc = profilequestion.Question.ShortDesc,
+                    QuestionTypeID = profilequestion.Question.QuestionType,
+                    QuestionType = (LuvFinder_ViewModels.QuestionType)profilequestion.Question.QuestionType,
+                    Answers = profilequestion.Question.Answers
+                        .Select(answer => new LuvFinder_ViewModels.Answer()
+                        {
+                            ID = answer.Id,
+                            Text = answer.Text,
+                        })
+                        .ToList()
+                }
+            })
+            .ToList();
+            return lst;
+        }
 
-        //[NonActionAttribute]
-        //private List<UserProfileQuestion> GetUserProfileQuestions(int userID)
-        //{
-        //    var lst = new List<LuvFinder_ViewModels.UserProfileQuestion>();
+        [NonActionAttribute]
+        private List<UserProfileQuestion> GetUserProfileQuestions(int userID)
+        {
+            var lst = new List<LuvFinder_ViewModels.UserProfileQuestion>();
 
-        //    lst = db.UserProfiles
-        //        .Where(userProfile => userProfile.UserId == userID)
-        //        .Select(profilequestion =>
-        //        new LuvFinder_ViewModels.UserProfileQuestion()
-        //        {
-        //            ID = profilequestion.Id,
-        //            UserID = profilequestion.UserId,
-        //            QuestionID = profilequestion.QuestionId,
-        //            AnswerID = profilequestion.AnswerId ?? 0,
-        //            AnswerText = profilequestion.AnswerText ?? string.Empty,
-        //            Date = profilequestion.Date,
-        //            Selected = profilequestion.Selected ?? false
-        //        })
-        //        .ToList();
+            lst = db.UserProfiles
+                .Where(userProfile => userProfile.UserId == userID)
+                .Select(profilequestion =>
+                new LuvFinder_ViewModels.UserProfileQuestion()
+                {
+                    ID = profilequestion.Id,
+                    UserID = profilequestion.UserId,
+                    QuestionID = profilequestion.QuestionId,
+                    AnswerID = profilequestion.AnswerId ?? 0,
+                    AnswerText = profilequestion.AnswerText ?? string.Empty,
+                    Date = profilequestion.Date,
+                    Selected = profilequestion.Selected ?? false
+                })
+                .ToList();
 
-        //    return lst;
-        //}
+            return lst;
+        }
 
         //[HttpGet]
         //[Route("profilequestionnaire")]
@@ -96,46 +96,46 @@ namespace LuvFinder_API.Controllers
         //    return Ok(lst);
         //}
 
-        //[HttpPost]
-        //[Route("userprofile")]
-        //public ActionResult UserProfile([Microsoft.AspNetCore.Mvc.FromBody] System.Text.Json.JsonElement userParams)
-        //{
-        //    var username = userParams.GetProperty("username").ToString();
-        //    var userID = (new UserController(new LuvFinderContext(), _config)).UserIDByName(username);
+        [HttpPost]
+        [Route("userprofile")]
+        public ActionResult UserProfile([Microsoft.AspNetCore.Mvc.FromBody] System.Text.Json.JsonElement userParams)
+        {
+            var username = userParams.GetProperty("username").ToString();
+            var userID = (new UserController(new LuvFinderContext(), _config)).UserIDByName(username);
 
-        //    List<ProfileQuestion> lstProfileQuestions = GetProfileQuestions();
-        //    List<UserProfileQuestion> lstUserProfile = GetUserProfileQuestions(userID);
-        //    if(lstUserProfile.Count == 0) //profile not created
-        //    {
-        //        return BadRequest("User profile not found");
-        //    }
+            List<ProfileQuestion> lstProfileQuestions = GetProfileQuestions();
+            List<UserProfileQuestion> lstUserProfile = GetUserProfileQuestions(userID);
+            if (lstUserProfile.Count == 0) //profile not created
+            {
+                return BadRequest("User profile not found");
+            }
 
-        //    lstProfileQuestions.ForEach(question =>
-        //    {
-        //        if (question.Question.QuestionType == LuvFinder_ViewModels.QuestionType.OpenText)
-        //        {
-        //            question.AnswerText = lstUserProfile?
-        //                                        .AsQueryable()?
-        //                                        .Where(entry => entry.QuestionID == question.Question.QuestionID &&
-        //                                                         entry.AnswerID == 0)
-        //                                        .SingleOrDefault()?
-        //                                        .AnswerText ?? string.Empty;
-        //        }
-        //        else
-        //        {
-        //            question?.Question.Answers.ForEach(answer =>
-        //            {
-        //                answer.Selected = lstUserProfile?
-        //                                        .AsQueryable()?
-        //                                        .Where(entry => entry.QuestionID == question.Question.QuestionID &&
-        //                                                         entry.AnswerID == answer.ID)
-        //                                        .SingleOrDefault()?.Selected ?? false;
-        //            });
-        //        }
-        //    });
+            lstProfileQuestions.ForEach(question =>
+            {
+                if (question.Question.QuestionType == LuvFinder_ViewModels.QuestionType.OpenText)
+                {
+                    question.AnswerText = lstUserProfile?
+                                                .AsQueryable()?
+                                                .Where(entry => entry.QuestionID == question.Question.QuestionID &&
+                                                                 entry.AnswerID == 0)
+                                                .SingleOrDefault()?
+                                                .AnswerText ?? string.Empty;
+                }
+                else
+                {
+                    question?.Question.Answers.ForEach(answer =>
+                    {
+                        answer.Selected = lstUserProfile?
+                                                .AsQueryable()?
+                                                .Where(entry => entry.QuestionID == question.Question.QuestionID &&
+                                                                 entry.AnswerID == answer.ID)
+                                                .SingleOrDefault()?.Selected ?? false;
+                    });
+                }
+            });
 
-        //    return Ok(lstProfileQuestions);
-        //}
+            return Ok(lstProfileQuestions);
+        }
 
         //[HttpGet]
         //[Route("countries")]
