@@ -1,6 +1,6 @@
 ﻿using LuvFinder_API.Helpers;
 using LuvFinder_API.Models;
-using LuvFinder_API.ViewModels;
+ 
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection.Metadata.Ecma335;
 
@@ -26,7 +26,7 @@ namespace LuvFinder_API.Controllers
         {
             var username = userParams.GetProperty("username").ToString();
             var userID = (new UserController(new LuvFinderContext(), _config)).UserIDByName(username);
-            var lst = new List<Blog>();
+            var lst = new List<LuvFinder_ViewModels.Blog>();
             try
             {
                 lst = GetUserBlogs(userID);
@@ -48,8 +48,8 @@ namespace LuvFinder_API.Controllers
             var blogid = Int32.Parse(userParams.GetProperty("blogid").ToString());
             
             var userID = (new UserController(new LuvFinderContext(), _config)).UserIDByName(username);
-            
-            ViewModels.Blog blog = new ViewModels.Blog();
+
+            LuvFinder_ViewModels.Blog blog = new LuvFinder_ViewModels.Blog();
             try
             {
                 var lst = GetUserBlogs(userID);
@@ -63,13 +63,13 @@ namespace LuvFinder_API.Controllers
 
             return Ok(blog);
         }
-
-        private List<ViewModels.Blog> GetUserBlogs(int userID)
+        [NonActionAttribute]
+        private List<LuvFinder_ViewModels.Blog> GetUserBlogs(int userID)
         {
-            var lst = new List<ViewModels.Blog>();
+            var lst = new List<LuvFinder_ViewModels.Blog>();
             lst = db.UserBlogs
                 .Where(b => b.UserId == userID)
-                .Select(b => new ViewModels.Blog()
+                .Select(b => new LuvFinder_ViewModels.Blog()
                 {
                     ID = b.Id,
                     UserID = b.UserId ?? 0,
@@ -80,7 +80,7 @@ namespace LuvFinder_API.Controllers
                     UpdateDate = b.UpdateDate ?? null
                 }).ToList();
 
-            ViewModels.UserInfo user = new ProfileController(db, _config, _webHostEnvironment)
+            LuvFinder_ViewModels.UserInfo user = new ProfileController(db, _config, _webHostEnvironment)
                                         .GetUserInfo(userID);
 
             //get blog comments
@@ -89,7 +89,7 @@ namespace LuvFinder_API.Controllers
                 blog.user = user;
                 blog.Comments = db.UserBlogComments
                                 .Where(b => b.BlogId == blog.ID && !b.ReplyTo.HasValue)
-                                .Select(b => new ViewModels.BlogComment()
+                                .Select(b => new LuvFinder_ViewModels.BlogComment()
                                 {
                                     ID = b.Id,
                                     BlogID = b.BlogId ?? 0,
@@ -112,7 +112,7 @@ namespace LuvFinder_API.Controllers
                     c.Reply = db.UserBlogComments
                                 .Where(b => b.BlogId == blog.ID &&
                                             (b.ReplyTo.HasValue && b.ReplyTo == c.ID))
-                                .Select(b => new ViewModels.BlogComment()
+                                .Select(b => new LuvFinder_ViewModels.BlogComment()
                                 {
                                     Date = b.Date,
                                     BlogID = b.BlogId??0,
