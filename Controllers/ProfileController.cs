@@ -266,200 +266,214 @@ namespace LuvFinder_API.Controllers
         //    return Ok(new LuvFinder_ViewModels.UserInfo());
         //}
 
-        //[HttpPost]
-        //[Route("saveprofile")]
-        //public ActionResult SaveProfile([FromBody] System.Text.Json.JsonElement param)
-        //{
-        //    var username = param.GetProperty("username").ToString();
-        //    var vm = JsonConvert.DeserializeObject<List<LuvFinder_ViewModels.ProfileQuestion>>(param.GetProperty("vm").ToString());
-        //    var vminfo = JsonConvert.DeserializeObject<LuvFinder_ViewModels.UserInfo>(param.GetProperty("info").ToString());
-        //    var userID = (new UserController(new LuvFinderContext(), _config)).UserIDByName(username);
+        [HttpPost]
+        [Route("saveprofile")]
+        public ActionResult SaveProfile([FromBody] System.Text.Json.JsonElement param)
+        {
+            var username = param.GetProperty("username").ToString();
+            var vm = JsonConvert.DeserializeObject<List<LuvFinder_ViewModels.ProfileQuestion>>(param.GetProperty("vm").ToString());
+            var vminfo = JsonConvert.DeserializeObject<LuvFinder_ViewModels.UserInfo>(param.GetProperty("info").ToString());
+            var userID = (new UserController(new LuvFinderContext(), _config)).UserIDByName(username);
 
-        //    List<string> lstErrors = new List<string>();
+            List<string> lstErrors = new List<string>();
 
-        //    if (userID == 0 )
-        //        return BadRequest("User Not found");
+            if (userID == 0)
+                return BadRequest("User Not found");
 
-        //    if (string.IsNullOrEmpty(vminfo?.FirstName))
-        //    {
-        //        lstErrors.Add($"First name required");
-        //    }
-        //    if (string.IsNullOrEmpty(vminfo?.LastName))
-        //    {
-        //        lstErrors.Add($"Last name required");
-        //    }
-        //    if (!vminfo.DOB.HasValue)
-        //    {
-        //        lstErrors.Add($"Date of birth required");
-        //    }
+            if (string.IsNullOrEmpty(vminfo?.FirstName))
+            {
+                lstErrors.Add($"First name required");
+            }
+            if (string.IsNullOrEmpty(vminfo?.LastName))
+            {
+                lstErrors.Add($"Last name required");
+            }
+            if (!vminfo.DOB.HasValue)
+            {
+                lstErrors.Add($"Date of birth required");
+            }
 
-        //    if (vminfo?.GenderID == 0)
-        //    {
-        //        lstErrors.Add($"Gender required");
-        //    }
-        //    if (vminfo?.SeekingGenderID == 0)
-        //    {
-        //        lstErrors.Add($"Seeking Gender required");
-        //    }
-        //    if (vminfo?.MaritalStatusID == 0)
-        //    {
-        //        lstErrors.Add($"Marital Status required");
-        //    }
-        //    if (vminfo?.CountryID == 0)
-        //    {
-        //        lstErrors.Add($"Country required");
-        //    }
-        //    if (vminfo?.RegionID == 0)
-        //    {
-        //        lstErrors.Add($"Region required");
-        //    }
-        //    if (vminfo?.CityID == 0)
-        //    {
-        //        lstErrors.Add($"City required");
-        //    }
+            if (vminfo?.GenderID == 0)
+            {
+                lstErrors.Add($"Gender required");
+            }
+            if (vminfo?.SeekingGenderID == 0)
+            {
+                lstErrors.Add($"Seeking Gender required");
+            }
+            if (vminfo?.MaritalStatusID == 0)
+            {
+                lstErrors.Add($"Marital Status required");
+            }
+            if (vminfo?.CountryID == 0)
+            {
+                lstErrors.Add($"Country required");
+            }
+            if (vminfo?.RegionID == 0)
+            {
+                lstErrors.Add($"Region required");
+            }
+            if (vminfo?.CityID == 0)
+            {
+                lstErrors.Add($"City required");
+            }
 
-        //    if (lstErrors.Count > 0)
-        //    {
-        //        return BadRequest(lstErrors);
-        //    }
+            if (lstErrors.Count > 0)
+            {
+                return BadRequest(lstErrors);
+            }
 
-        //    try
-        //    {
-        //        var infotodelete = db.UserInfos.Where(u => u.UserId == userID).SingleOrDefault();
-        //        if (infotodelete != null)
-        //            db.UserInfos.Remove(infotodelete);
+            try
+            {
+                var infotodelete = db.UserInfos.Where(u => u.UserId == userID).SingleOrDefault();
+                if (infotodelete != null)
+                    db.UserInfos.Remove(infotodelete);
 
-        //        db.UserInfos.Add(new Models.UserInfo()
-        //        {
-        //            FirstName = vminfo?.FirstName,
-        //            LastName = vminfo?.LastName,
-        //            CityId = vminfo?.CityID??0,
-        //            CountryId = short.Parse((vminfo?.CountryID??0).ToString()),
-        //            RegionId = vminfo?.RegionID??0,
-        //            Dob = vminfo?.DOB,
-        //            GenderId = vminfo?.GenderID,
-        //            SeekingGenderId = vminfo?.SeekingGenderID,
-        //            MaritalStatusId = vminfo?.MaritalStatusID,
-        //            UserId = userID
-        //        });
-        //    }
-        //    catch (Exception exc)
-        //    {
-        //        lstErrors.Add($"Error while updating basic info {exc.Message}");
-        //        return BadRequest(lstErrors);
-        //    }
+                db.UserInfos.Add(new Models.UserInfo()
+                {
+                    FirstName = vminfo?.FirstName,
+                    LastName = vminfo?.LastName,
+                    CityId = vminfo?.CityID ?? 0,
+                    CountryId = short.Parse((vminfo?.CountryID ?? 0).ToString()),
+                    RegionId = vminfo?.RegionID ?? 0,
+                    Dob = vminfo?.DOB,
+                    GenderId = vminfo?.GenderID,
+                    SeekingGenderId = vminfo?.SeekingGenderID,
+                    MaritalStatusId = vminfo?.MaritalStatusID,
+                    UserId = userID
+                });
+            }
+            catch (Exception exc)
+            {
+                lstErrors.Add($"Error while updating basic info {exc.Message}");
+                return BadRequest(lstErrors);
+            }
 
-        //    if (vm != null)
-        //    {
-        //        //clearing all validation errors
-        //        vm.ToList().ForEach(question =>
-        //        {
-        //            question.Question.InvalidResponse = false;
-        //            question.Question.Error = string.Empty;
-        //        });
+            if (vm != null)
+            {
+                //clearing all validation errors
+                vm.ToList().ForEach(question =>
+                {
+                    question.Question.InvalidResponse = false;
+                    question.Question.Error = string.Empty;
+                });
 
-        //        vm.ToList().ForEach(question =>
-        //        {
-        //            if (question.Question.QuestionType == LuvFinder_ViewModels.QuestionType.OpenText)
-        //            {
-        //                if (string.IsNullOrEmpty(question.AnswerText))
-        //                    question.Question.InvalidResponse = true;
-        //            }
-        //            else if(question.Question.QuestionType == LuvFinder_ViewModels.QuestionType.Check)
-        //            {
-        //                if (question.Question.Answers.All(ans => ans.Selected == false))
-        //                {
-        //                    question.Question.InvalidResponse = true;
-        //                }
-        //            }
-        //            else if (question.Question.QuestionType == LuvFinder_ViewModels.QuestionType.Radio)
-        //            {
-        //                if (!question.Question.Answers.Any(ans => ans.Selected == true))
-        //                {
-        //                    question.Question.InvalidResponse = true;
-        //                }
-        //            }
+                vm.ToList().ForEach(question =>
+                {
+                    if (question.Question.QuestionType == LuvFinder_ViewModels.QuestionType.OpenText)
+                    {
+                        if (string.IsNullOrEmpty(question.AnswerText))
+                            question.Question.InvalidResponse = true;
+                    }
+                    else if (question.Question.QuestionType == LuvFinder_ViewModels.QuestionType.Check)
+                    {
+                        if (question.Question.Answers.All(ans => ans.Selected == false))
+                        {
+                            question.Question.InvalidResponse = true;
+                        }
+                    }
+                    else if (question.Question.QuestionType == LuvFinder_ViewModels.QuestionType.Radio)
+                    {
+                        if (!question.Question.Answers.Any(ans => ans.Selected == true))
+                        {
+                            question.Question.InvalidResponse = true;
+                        }
+                    }
 
-        //            if (question.Question.InvalidResponse)
-        //            {
-        //                question.Question.Error = $"Value required for {question.Question.ShortDesc}";
-        //            }
+                    if (question.Question.InvalidResponse)
+                    {
+                        question.Question.Error = $"Value required for {question.Question.ShortDesc}";
+                    }
 
-        //        });
+                });
 
-        //        if (!vm.Any( q => q.Question.Error.Length > 0 ))//no errors found
-        //        {
-        //            db.UserProfiles.RemoveRange(db.UserProfiles.Where(u => u.UserId == userID).ToList());
+                if (!vm.Any(q => q.Question.Error.Length > 0))//no errors found
+                {
+                    db.UserProfiles.RemoveRange(db.UserProfiles.Where(u => u.UserId == userID).ToList());
 
-        //            vm.ToList().ForEach(question =>
-        //            {
-        //                if (question.Question.Answers.Count == 0)
-        //                {
+                    vm.ToList().ForEach(question =>
+                    {
+                        if (question.Question.Answers.Count == 0)
+                        {
 
-        //                    db.UserProfiles.Add(new UserProfile()
-        //                    {
-        //                        UserId = userID,
-        //                        QuestionId = question.Question.QuestionID,
-        //                        AnswerText = string.IsNullOrEmpty(question.AnswerText) ? string.Empty : question.AnswerText,
-        //                        Selected = false
-        //                    });
-        //                }
-        //                else
-        //                    question.Question.Answers.ForEach(answer =>
-        //                    {
-        //                        db.UserProfiles.Add(new UserProfile()
-        //                        {
-        //                            UserId = userID,
-        //                            QuestionId = question.Question.QuestionID,
-        //                            AnswerId = answer.ID,
-        //                            AnswerText = string.Empty,
-        //                            Selected = answer.Selected
-        //                        });
-        //                    });
+                            db.UserProfiles.Add(new UserProfile()
+                            {
+                                UserId = userID,
+                                QuestionId = question.Question.QuestionID,
+                                AnswerText = string.IsNullOrEmpty(question.AnswerText) ? string.Empty : question.AnswerText,
+                                Selected = false
+                            });
+                        }
+                        else
+                            question.Question.Answers.ForEach(answer =>
+                            {
+                                db.UserProfiles.Add(new UserProfile()
+                                {
+                                    UserId = userID,
+                                    QuestionId = question.Question.QuestionID,
+                                    AnswerId = answer.ID,
+                                    AnswerText = string.Empty,
+                                    Selected = answer.Selected
+                                });
+                            });
 
-        //            });
+                    });
 
-        //            db.SaveChanges();
-        //        }
-        //        else
-        //            return BadRequest(vm);
-        //    }
+                    db.SaveChanges();
+                }
+                else
+                {
+                    //NOTE, below statement doesnt work 
+                    //during casting on blazor client side
+                    //it does work in react
+                    //return BadRequest(vm.ToList());
+                    vm.ForEach(q =>
+                    {
+                        if (q.Question.InvalidResponse)
+                        {
+                            lstErrors.Add(q.Question.Error);
+                        }
+                    });
+                    return BadRequest(lstErrors);
+                }
+            }
 
-        //    return Ok(true);
-        //}
+            return Ok(true);
+        }
 
-        //[HttpGet]
-        //[Route("maritalstatuses")]
-        //public ActionResult MaritalStatuses()
-        //{
-        //    var lst = db.UserMaritalStatuses
-        //                .Select(m => new LuvFinder_ViewModels.MaritalStatus()
-        //                {
-        //                    Id = m.Id,
-        //                    Name = m.Status??string.Empty,
-        //                }).ToList();
+        [HttpGet]
+        [Route("maritalstatuses")]
+        public ActionResult MaritalStatuses()
+        {
+            var lst = db.UserMaritalStatuses
+                        .Select(m => new LuvFinder_ViewModels.MaritalStatus()
+                        {
+                            Id = m.Id,
+                            Name = m.Status ?? string.Empty,
+                        }).ToList();
 
-        //    return Ok(lst);
-        //}
+            return Ok(lst);
+        }
 
-        //[HttpGet]
-        //[Route("genders")]
-        //public ActionResult Genders()
-        //{
-        //    List<Gender> lst = LoadGenders();
+        [HttpGet]
+        [Route("genders")]
+        public ActionResult Genders()
+        {
+            List<Gender> lst = LoadGenders();
 
-        //    return Ok(lst);
-        //}
-
-        //public List<Gender> LoadGenders()
-        //{
-        //    return db.UserGenders
-        //                            .Select(m => new LuvFinder_ViewModels.Gender()
-        //                            {
-        //                                Id = m.Id,
-        //                                Name = m.Gender ?? string.Empty,
-        //                            }).ToList();
-        //}
+            return Ok(lst);
+        }
+        
+        [NonActionAttribute]
+        public List<Gender> LoadGenders()
+        {
+            return db.UserGenders
+                                    .Select(m => new LuvFinder_ViewModels.Gender()
+                                    {
+                                        Id = m.Id,
+                                        Name = m.Gender ?? string.Empty,
+                                    }).ToList();
+        }
 
         [HttpPost]
         [Route("profiles")]
