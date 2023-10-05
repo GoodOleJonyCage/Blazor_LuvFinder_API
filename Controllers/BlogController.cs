@@ -264,7 +264,7 @@ namespace LuvFinder_API.Controllers
             var title = Request.Form["title"][0];
             var body = Request.Form["body"][0];
             var username = Request.Form["username"][0];
-
+           
             if (string.IsNullOrEmpty(blogidStr))
                 return BadRequest("Blog ID required");
 
@@ -287,10 +287,12 @@ namespace LuvFinder_API.Controllers
                 {
                     if (file.Length > 0)
                     {
-                        if (!file.IsImage())
-                        {
-                            return BadRequest("Has to be an image file");
-                        }
+                        //NOTE The following doesnt work in blazor but does in react
+                        //diff being the way we upload the image
+                        //if (!file.IsImage())
+                        //{
+                        //    return BadRequest("Has to be an image file");
+                        //}
                         using (MemoryStream ms = new MemoryStream())
                         {
                             file.CopyTo(ms);
