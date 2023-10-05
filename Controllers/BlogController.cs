@@ -258,13 +258,14 @@ namespace LuvFinder_API.Controllers
 
         [HttpPost]
         [Route("editblog")]
-        public ActionResult EditBlog(List<IFormFile> files)
+        public ActionResult EditBlog()
         {
             var blogidStr = Request.Form["blogid"][0];
             var title = Request.Form["title"][0];
             var body = Request.Form["body"][0];
             var username = Request.Form["username"][0];
-           
+            var imgbytes = Request.Form["bytes"][0];
+
             if (string.IsNullOrEmpty(blogidStr))
                 return BadRequest("Blog ID required");
 
@@ -282,33 +283,31 @@ namespace LuvFinder_API.Controllers
 
             try
             {
-                byte[] imgArray = null;
-                foreach (var file in files)
-                {
-                    if (file.Length > 0)
-                    {
-                        //NOTE The following doesnt work in blazor but does in react
-                        //diff being the way we upload the image
-                        //if (!file.IsImage())
-                        //{
-                        //    return BadRequest("Has to be an image file");
-                        //}
-                        using (MemoryStream ms = new MemoryStream())
-                        {
-                            file.CopyTo(ms);
-                            imgArray = ms.ToArray();
-                            ms.Close();
-                            ms.Dispose();
-                        }
-                    }
-                    break;//since we are only uploading one file 
-                }
+                //byte[] imgArray = null;
+                //foreach (var file in files)
+                //{
+                //    if (file.Length > 0)
+                //    {
+                //        //if (!file.IsImage())
+                //        //{
+                //        //    return BadRequest("Has to be an image file");
+                //        //}
+                //        using (MemoryStream ms = new MemoryStream())
+                //        {
+                //            file.CopyTo(ms);
+                //            imgArray = ms.ToArray();
+                //            ms.Close();
+                //            ms.Dispose();
+                //        }
+                //    }
+                //    break;//since we are only uploading one file 
+                //}
 
                 var blog = db.UserBlogs.Where(b => b.Id == blogid).SingleOrDefault();
                 if (blog != null)
                 {
                     blog.Title = title;
-                    blog.Image = imgArray?.Length > 0 ? imgArray : blog.Image;
+                    blog.Image = imgbytes.Length > 0 ? Convert.FromBase64String(imgbytes) : blog.Image;
                     blog.Body = body;
                 }
                 db.SaveChanges();
