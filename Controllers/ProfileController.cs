@@ -637,109 +637,109 @@ namespace LuvFinder_API.Controllers
             return Ok(hasLiked);
         }
 
-        //[HttpPost]
-        //[Route("activityfriends")]
-        //public ActionResult ActivityFriends([Microsoft.AspNetCore.Mvc.FromBody] System.Text.Json.JsonElement userParams)
-        //{
-        //    var usernameTo = userParams.GetProperty("usernameto").ToString();
-        //    var userIDTo = (new UserController(new LuvFinderContext(), _config)).UserIDByName(usernameTo);
+        [HttpPost]
+        [Route("activityfriends")]
+        public ActionResult ActivityFriends([Microsoft.AspNetCore.Mvc.FromBody] System.Text.Json.JsonElement userParams)
+        {
+            var usernameTo = userParams.GetProperty("usernameto").ToString();
+            var userIDTo = (new UserController(new LuvFinderContext(), _config)).UserIDByName(usernameTo);
 
-        //    var lst = new List<FriendActivity>();
+            var lst = new List<FriendActivity>();
 
-        //    try
-        //    {
-        //        lst = db.UserLikes
-        //                  .Where(l => l.ToId == userIDTo)
-        //                  .OrderBy( l => l.Date)
-        //                  .Select(l => new FriendActivity()
-        //                  {
-        //                      FromID = l.FromId,
-        //                      ToID = l.ToId,
-        //                      Date = l.Date,
-        //                      LikeAccepted = l.LikeAccepted??false,
-        //                      LikeAcceptedDate = l.LikeAcceptedDate 
+            try
+            {
+                lst = db.UserLikes
+                          .Where(l => l.ToId == userIDTo)
+                          .OrderBy(l => l.Date)
+                          .Select(l => new FriendActivity()
+                          {
+                              FromID = l.FromId,
+                              ToID = l.ToId,
+                              Date = l.Date,
+                              LikeAccepted = l.LikeAccepted ?? false,
+                              LikeAcceptedDate = l.LikeAcceptedDate
 
-        //                  }).ToList();
+                          }).ToList();
 
-        //        lst.ForEach(l =>
-        //        {
-        //            l.FromUserInfo = GetUserInfo(l.FromID);
-        //            l.ToUserInfo = GetUserInfo(l.ToID);
-        //         });
+                lst.ForEach(l =>
+                {
+                    l.FromUserInfo = GetUserInfo(l.FromID);
+                    l.ToUserInfo = GetUserInfo(l.ToID);
+                });
 
-        //    }
-        //    catch (Exception exc)
-        //    {
-        //        return BadRequest(exc.Message);
-        //    }
+            }
+            catch (Exception exc)
+            {
+                return BadRequest(exc.Message);
+            }
 
-        //    return Ok(lst);
-        //}
+            return Ok(lst);
+        }
 
-        //[HttpPost]
-        //[Route("startfriendship")]
-        //public ActionResult StartFriendShip([Microsoft.AspNetCore.Mvc.FromBody] System.Text.Json.JsonElement userParams)
-        //{
-        //    var usernameFrom = userParams.GetProperty("usernamefrom").ToString();
-        //    var usernameTo = userParams.GetProperty("usernameto").ToString();
+        [HttpPost]
+        [Route("startfriendship")]
+        public ActionResult StartFriendShip([Microsoft.AspNetCore.Mvc.FromBody] System.Text.Json.JsonElement userParams)
+        {
+            var usernameFrom = userParams.GetProperty("usernamefrom").ToString();
+            var usernameTo = userParams.GetProperty("usernameto").ToString();
 
-        //    var userIDFrom = (new UserController(new LuvFinderContext(), _config)).UserIDByName(usernameFrom);
-        //    var userIDTo = (new UserController(new LuvFinderContext(), _config)).UserIDByName(usernameTo);
+            var userIDFrom = (new UserController(new LuvFinderContext(), _config)).UserIDByName(usernameFrom);
+            var userIDTo = (new UserController(new LuvFinderContext(), _config)).UserIDByName(usernameTo);
 
-        //    var activity = new FriendActivity();
+            var activity = new FriendActivity();
 
-        //    try
-        //    {
-        //        var entry  = db.UserLikes.Where(l => l.FromId == userIDFrom && l.ToId == userIDTo)
-        //                    .SingleOrDefault();
+            try
+            {
+                var entry = db.UserLikes.Where(l => l.FromId == userIDFrom && l.ToId == userIDTo)
+                            .SingleOrDefault();
 
-        //        if (entry != null)
-        //        {
-        //            entry.LikeAccepted = true;
-        //            entry.LikeAcceptedDate = DateTime.Now;
+                if (entry != null)
+                {
+                    entry.LikeAccepted = true;
+                    entry.LikeAcceptedDate = DateTime.Now;
 
-        //            //update or add corresponding mirror like since friendship started 
-        //            var mirrorentry = db.UserLikes.Where(l => l.FromId == userIDTo && l.ToId == userIDFrom).SingleOrDefault();
-        //            if (mirrorentry == null)
-        //            {
-        //                db.UserLikes.Add(new UserLike()
-        //                {
-        //                    FromId = userIDTo,
-        //                    ToId = userIDFrom,
-        //                    LikeAccepted = true,
-        //                    LikeAcceptedDate = DateTime.Now
-        //                });
-        //            }
-        //            else
-        //            {
-        //                mirrorentry.LikeAccepted = true;
-        //                mirrorentry.LikeAcceptedDate = DateTime.Now;
-        //            }
+                    //update or add corresponding mirror like since friendship started 
+                    var mirrorentry = db.UserLikes.Where(l => l.FromId == userIDTo && l.ToId == userIDFrom).SingleOrDefault();
+                    if (mirrorentry == null)
+                    {
+                        db.UserLikes.Add(new UserLike()
+                        {
+                            FromId = userIDTo,
+                            ToId = userIDFrom,
+                            LikeAccepted = true,
+                            LikeAcceptedDate = DateTime.Now
+                        });
+                    }
+                    else
+                    {
+                        mirrorentry.LikeAccepted = true;
+                        mirrorentry.LikeAcceptedDate = DateTime.Now;
+                    }
 
-        //            db.SaveChanges();
-        //        }
+                    db.SaveChanges();
+                }
 
-        //          activity = db.UserLikes.Where(l => l.FromId == userIDFrom && l.ToId == userIDTo)
-        //                .Select(l => new FriendActivity()
-        //                 {
-        //                     FromID = l.FromId,
-        //                     ToID = l.ToId,
-        //                     Date = l.Date,
-        //                     LikeAccepted = l.LikeAccepted ?? false,
-        //                     LikeAcceptedDate = l.LikeAcceptedDate
-        //                 })
-        //                .SingleOrDefault();
+                activity = db.UserLikes.Where(l => l.FromId == userIDFrom && l.ToId == userIDTo)
+                      .Select(l => new FriendActivity()
+                      {
+                          FromID = l.FromId,
+                          ToID = l.ToId,
+                          Date = l.Date,
+                          LikeAccepted = l.LikeAccepted ?? false,
+                          LikeAcceptedDate = l.LikeAcceptedDate
+                      })
+                      .SingleOrDefault();
 
-        //        if(activity!= null)
-        //            activity.FromUserInfo = GetUserInfo(activity.FromID);
-        //    }
-        //    catch (Exception exc)
-        //    {
-        //        return BadRequest(exc.Message);
-        //    }
+                if (activity != null)
+                    activity.FromUserInfo = GetUserInfo(activity.FromID);
+            }
+            catch (Exception exc)
+            {
+                return BadRequest(exc.Message);
+            }
 
-        //    return Ok(activity);
-        //}
+            return Ok(activity);
+        }
 
 
         //[HttpPost]
@@ -769,25 +769,25 @@ namespace LuvFinder_API.Controllers
         //    return Ok(lst);
         //}
 
-        //[HttpPost]
-        //[Route("friendcount")]
-        //public ActionResult GetFriendCount([Microsoft.AspNetCore.Mvc.FromBody] System.Text.Json.JsonElement userParams)
-        //{
-        //    var username = userParams.GetProperty("username").ToString();
-        //    var userID = (new UserController(new LuvFinderContext(), _config)).UserIDByName(username);
+        [HttpPost]
+        [Route("friendcount")]
+        public ActionResult GetFriendCount([Microsoft.AspNetCore.Mvc.FromBody] System.Text.Json.JsonElement userParams)
+        {
+            var username = userParams.GetProperty("username").ToString();
+            var userID = (new UserController(new LuvFinderContext(), _config)).UserIDByName(username);
 
-        //    var count = 0;
-        //    try
-        //    {
-        //        count = db.UserLikes
-        //                   .Count(m => m.FromId == userID && (m.LikeAccepted.HasValue && m.LikeAccepted == true));
-        //    }
-        //    catch (Exception exc)
-        //    {
-        //        return BadRequest(exc.Message);
-        //    }
-        //    return Ok(count);
-        //}
+            var count = 0;
+            try
+            {
+                count = db.UserLikes
+                           .Count(m => m.FromId == userID && (m.LikeAccepted.HasValue && m.LikeAccepted == true));
+            }
+            catch (Exception exc)
+            {
+                return BadRequest(exc.Message);
+            }
+            return Ok(count);
+        }
 
     }
 }
