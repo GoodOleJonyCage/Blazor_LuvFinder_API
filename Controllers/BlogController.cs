@@ -192,12 +192,13 @@ namespace LuvFinder_API.Controllers
 
         [HttpPost]
         [Route("createblog")]
-        public ActionResult CreateBlog(List<IFormFile> files)
+        public ActionResult CreateBlog(/*List<IFormFile> files*/)
         {
             var title = Request.Form["title"][0];
             var body = Request.Form["body"][0];
             var username = Request.Form["username"][0];
-            
+            var imgbytes = Request.Form["bytes"][0];
+
             if (string.IsNullOrEmpty(title))
                 return BadRequest("Title required");
 
@@ -207,52 +208,73 @@ namespace LuvFinder_API.Controllers
             if(string.IsNullOrEmpty(username))
                 return BadRequest("UserName required");
 
+            if(imgbytes?.Length == 0)
+            {
+                return BadRequest("Image required");
+            }
+
             var userID = (new UserController(new LuvFinderContext(), _config)).UserIDByName(username);
 
-            if (files != null)
+            //if (files != null)
+            //{
+            //    if (files.Count == 0)
+            //        return BadRequest("No Image uploaded");
+
+            //    try
+            //    {
+            //        foreach (var file in files)
+            //        {
+            //            if (file.Length > 0)
+            //            {
+            //                if (!file.IsImage())
+            //                {
+            //                    return BadRequest("Has to be an image file");
+            //                }
+
+            //                byte[] imgArray;
+            //                using (MemoryStream ms = new MemoryStream())
+            //                {
+            //                    file.CopyTo(ms);
+            //                    imgArray = ms.ToArray();
+            //                    ms.Close();
+            //                    ms.Dispose();
+            //                }
+
+            //                db.UserBlogs.Add(new UserBlog()
+            //                {
+            //                    Title = title,
+            //                    Image = imgArray,
+            //                    Body = body,
+            //                    UserId = userID
+            //                });
+            //                db.SaveChanges();
+
+            //            }
+            //            break;//since we are only uploading one file 
+            //        }
+            //    }
+            //    catch (Exception exc)
+            //    {
+            //        return BadRequest(exc.Message);
+            //    }
+
+            //}
+            try
             {
-                if (files.Count == 0)
-                    return BadRequest("No Image uploaded");
-
-                try
+                db.UserBlogs.Add(new UserBlog()
                 {
-                    foreach (var file in files)
-                    {
-                        if (file.Length > 0)
-                        {
-                            if (!file.IsImage())
-                            {
-                                return BadRequest("Has to be an image file");
-                            }
-
-                            byte[] imgArray;
-                            using (MemoryStream ms = new MemoryStream())
-                            {
-                                file.CopyTo(ms);
-                                imgArray = ms.ToArray();
-                                ms.Close();
-                                ms.Dispose();
-                            }
-                            
-                            db.UserBlogs.Add(new UserBlog()
-                            {
-                                Title = title,
-                                Image = imgArray,
-                                Body = body,
-                                UserId = userID
-                            });
-                            db.SaveChanges();
-
-                        }
-                        break;//since we are only uploading one file 
-                    }
-                }
-                catch (Exception exc)
-                {
-                    return BadRequest(exc.Message);
-                }
-
+                    Title = title,
+                    Image = Convert.FromBase64String(imgbytes),
+                    Body = body,
+                    UserId = userID
+                });
+                db.SaveChanges();
             }
+            catch (Exception exc)
+            {
+                return BadRequest(exc.Message);
+            }
+
             return Ok("Blog Created successfully");
         }
 
