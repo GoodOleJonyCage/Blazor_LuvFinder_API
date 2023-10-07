@@ -515,35 +515,35 @@ namespace LuvFinder_API.Controllers
             return lst;
         }
 
-        //[NonActionAttribute]
-        //private List<LuvFinder_ViewModels.UserInfo> ProfileList(string username, List<int>? lstSelectFrom)
-        //{
-        //    //select all profiles except the user if logged in
-        //    var lst =   (from u in db.Users
-        //                     join i in db.UserInfos on u.Id equals i.UserId
-        //                     where u.Username != (string.IsNullOrEmpty(username) ? string.Empty : username) &&
-        //                           (lstSelectFrom != null ? lstSelectFrom.Contains(u.Id) : true)
-        //                     select new LuvFinder_ViewModels.UserInfo()
-        //                     {
-        //                         UserID = u.Id,
-        //                         UserName = u.Username,
-        //                         LastName = i.LastName ?? string.Empty,
-        //                         FirstName = i.FirstName ?? string.Empty,
-        //                         GenderID = i.GenderId ?? 0,
-        //                         SeekingGenderID = i.SeekingGenderId ?? 0,
-        //                         MaritalStatusID = i.MaritalStatusId ?? 0,
-        //                         CountryID = i.CountryId,
-        //                         CityID = i.CityId,
-        //                         RegionID = i.RegionId,
-        //                         DOB = i.Dob ?? DateTime.MinValue,
-        //                     }).ToList();
+        [NonActionAttribute]
+        private List<LuvFinder_ViewModels.UserInfo> ProfileList(string username, List<int>? lstSelectFrom)
+        {
+            //select all profiles except the user if logged in
+            var lst = (from u in db.Users
+                       join i in db.UserInfos on u.Id equals i.UserId
+                       where u.Username != (string.IsNullOrEmpty(username) ? string.Empty : username) &&
+                             (lstSelectFrom != null ? lstSelectFrom.Contains(u.Id) : true)
+                       select new LuvFinder_ViewModels.UserInfo()
+                       {
+                           UserID = u.Id,
+                           UserName = u.Username,
+                           LastName = i.LastName ?? string.Empty,
+                           FirstName = i.FirstName ?? string.Empty,
+                           GenderID = i.GenderId ?? 0,
+                           SeekingGenderID = i.SeekingGenderId ?? 0,
+                           MaritalStatusID = i.MaritalStatusId ?? 0,
+                           CountryID = i.CountryId,
+                           CityID = i.CityId,
+                           RegionID = i.RegionId,
+                           DOB = i.Dob ?? DateTime.MinValue,
+                       }).ToList();
 
-        //    lst.ForEach(user =>
-        //    {
-        //        LoadUserDetails(user);
-        //    });
-        //    return lst;
-        //}
+            lst.ForEach(user =>
+            {
+                LoadUserDetails(user);
+            });
+            return lst;
+        }
 
         [NonActionAttribute]
         public void LoadUserDetails(LuvFinder_ViewModels.UserInfo user)
@@ -742,32 +742,32 @@ namespace LuvFinder_API.Controllers
         }
 
 
-        //[HttpPost]
-        //[Route("friends")]
-        //public ActionResult GetFriends([Microsoft.AspNetCore.Mvc.FromBody] System.Text.Json.JsonElement userParams)
-        //{
-        //    var username = userParams.GetProperty("username").ToString();
-        //    var userID = (new UserController(new LuvFinderContext(), _config)).UserIDByName(username);
+        [HttpPost]
+        [Route("friends")]
+        public ActionResult GetFriends([Microsoft.AspNetCore.Mvc.FromBody] System.Text.Json.JsonElement userParams)
+        {
+            var username = userParams.GetProperty("username").ToString();
+            var userID = (new UserController(new LuvFinderContext(), _config)).UserIDByName(username);
 
-        //    List<LuvFinder_ViewModels.UserInfo> lst = new List<LuvFinder_ViewModels.UserInfo>();
+            List<LuvFinder_ViewModels.UserInfo> lst = new List<LuvFinder_ViewModels.UserInfo>();
 
-        //    try
-        //    {
-        //        var lstFriendIds = db.UserLikes
-        //                        .Where(l => l.FromId == userID &&
-        //                                    l.LikeAccepted.HasValue && l.LikeAccepted == true)
-        //                        .Select(l => l.ToId)
-        //                        .ToList();
+            try
+            {
+                var lstFriendIds = db.UserLikes
+                                .Where(l => l.FromId == userID &&
+                                            l.LikeAccepted.HasValue && l.LikeAccepted == true)
+                                .Select(l => l.ToId)
+                                .ToList();
 
-        //            lst = ProfileList(username, lstFriendIds);
-        //    }
-        //    catch (Exception exc)
-        //    {
-        //        return BadRequest(exc.Message);
-        //    }
+                lst = ProfileList(username, lstFriendIds);
+            }
+            catch (Exception exc)
+            {
+                return BadRequest(exc.Message);
+            }
 
-        //    return Ok(lst);
-        //}
+            return Ok(lst);
+        }
 
         [HttpPost]
         [Route("friendcount")]
