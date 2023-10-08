@@ -31,14 +31,14 @@ namespace LuvFinder.Controllers
 
         [HttpPost]
         [Route("addchatmessage")]
-        public async Task<ActionResult> AddChatMessage([Microsoft.AspNetCore.Mvc.FromBody] System.Text.Json.JsonElement userParams)
+        public ActionResult AddChatMessage([Microsoft.AspNetCore.Mvc.FromBody] System.Text.Json.JsonElement userParams)
         {
             var usernameFrom = userParams.GetProperty("usernamefrom").ToString();
             var usernameTo = userParams.GetProperty("usernameto").ToString();
             var message = userParams.GetProperty("message").ToString();
 
-            var userIDFrom = await (new UserController(new LuvFinderContext(), _config)).UserIDByNameAsync(usernameFrom);
-            var userIDTo = await  (new UserController(new LuvFinderContext(), _config)).UserIDByNameAsync(usernameTo);
+            var userIDFrom = (new UserController(new LuvFinderContext(), _config)).UserIDByName(usernameFrom);
+            var userIDTo = (new UserController(new LuvFinderContext(), _config)).UserIDByName(usernameTo);
 
             if (string.IsNullOrEmpty(message))
             {
@@ -47,15 +47,15 @@ namespace LuvFinder.Controllers
 
             try
             {
-                await db.UserMessages
-                           .AddAsync(new UserMessage()
-                           {
-                               FromId = userIDFrom,
-                               ToId = userIDTo,
-                               Message = message,
-                           });
-                
-                db.SaveChangesAsync();
+                db.UserMessages
+                         .Add(new UserMessage()
+                         {
+                             FromId = userIDFrom,
+                             ToId = userIDTo,
+                             Message = message,
+                         });
+
+                db.SaveChanges();
             }
             catch (Exception exc)
             {
