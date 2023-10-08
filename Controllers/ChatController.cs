@@ -161,64 +161,63 @@ namespace LuvFinder.Controllers
         //    return Ok(messages);
         //}
 
-        //[HttpPost]
-        //[Route("chatcount")]
-        ////[Authorize]
-        //public ActionResult GetChatMessagesCount([Microsoft.AspNetCore.Mvc.FromBody] System.Text.Json.JsonElement userParams)
-        //{
-        //    var username = userParams.GetProperty("username").ToString();
-        //    var userID = (new UserController(new LuvFinderContext(), _config)).UserIDByName(username);
+        [HttpPost]
+        [Route("chatcount")]
+        //[Authorize]
+        public ActionResult GetChatMessagesCount([Microsoft.AspNetCore.Mvc.FromBody] System.Text.Json.JsonElement userParams)
+        {
+            var username = userParams.GetProperty("username").ToString();
+            var userID = (new UserController(new LuvFinderContext(), _config)).UserIDByName(username);
 
-        //    var count = 0;
+            var count = 0;
 
-        //    try
-        //    {
-        //        count = db.UserMessages
-        //                   .Count(m => m.FromId == userID || m.ToId == userID);
-        //    }
-        //    catch (Exception exc)
-        //    {
-        //        return BadRequest(exc.Message);
-        //    }
+            try
+            {
+                count = db.UserMessages
+                           .Count(m => m.FromId == userID || m.ToId == userID);
+            }
+            catch (Exception exc)
+            {
+                return BadRequest(exc.Message);
+            }
 
-        //    return Ok(count);
-        //}
+            return Ok(count);
+        }
 
-        //[HttpPost]
-        //[Route("chatsummary")]
-        //public ActionResult GetChatSummary([Microsoft.AspNetCore.Mvc.FromBody] System.Text.Json.JsonElement userParams)
-        //{
-        //    var username = userParams.GetProperty("username").ToString();
-        //    var userID = (new UserController(new LuvFinderContext(), _config)).UserIDByName(username);
+        [HttpPost]
+        [Route("chatsummary")]
+        public ActionResult GetChatSummary([Microsoft.AspNetCore.Mvc.FromBody] System.Text.Json.JsonElement userParams)
+        {
+            var username = userParams.GetProperty("username").ToString();
+            var userID = (new UserController(new LuvFinderContext(), _config)).UserIDByName(username);
 
-        //    var lst = new List<ChatSummary>();
+            var lst = new List<LuvFinder_ViewModels.ChatSummary>();
 
-        //    try
-        //    {
-        //        db.Users.ToList().ForEach(u =>
-        //        {
-        //            var messagecount = db.UserMessages
-        //                                   .Count(m => (m.FromId == userID && m.ToId == u.Id) ||
-        //                                                (m.FromId == u.Id && m.ToId == userID));
-        //            if (messagecount > 0)
-        //            {
-        //                lst.Add(new ChatSummary()
-        //                {
-        //                   UserInfoB = new ProfileController(db,_config, _webHostEnvironment).GetUserInfo(u.Id),
-        //                   Count = messagecount
-        //                });
-        //            }
-        //        });
+            try
+            {
+                db.Users.ToList().ForEach(u =>
+                {
+                    var messagecount = db.UserMessages
+                                           .Count(m => (m.FromId == userID && m.ToId == u.Id) ||
+                                                        (m.FromId == u.Id && m.ToId == userID));
+                    if (messagecount > 0)
+                    {
+                        lst.Add(new LuvFinder_ViewModels.ChatSummary()
+                        {
+                            UserInfoB = new ProfileController(db, _config, _webHostEnvironment).GetUserInfo(u.Id),
+                            Count = messagecount
+                        });
+                    }
+                });
 
+            }
+            catch (Exception exc)
+            {
+                return BadRequest(exc.Message);
+            }
 
-        //    }
-        //    catch (Exception exc)
-        //    {
-        //        return BadRequest(exc.Message);
-        //    }
-
-        //    return Ok(lst);
-        //}
+            return Ok(lst);
+        }
 
     }
 }
