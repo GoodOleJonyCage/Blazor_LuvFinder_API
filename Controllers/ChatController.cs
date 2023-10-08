@@ -122,44 +122,44 @@ namespace LuvFinder.Controllers
             return Ok(areFriends);
         }
 
-        //[HttpPost]
-        //[Route("chat")]
-        //public ActionResult GetChat([Microsoft.AspNetCore.Mvc.FromBody] System.Text.Json.JsonElement userParams)
-        //{
-        //    var usernameFrom = userParams.GetProperty("usernamefrom").ToString();
-        //    var usernameTo = userParams.GetProperty("usernameto").ToString();
+        [HttpPost]
+        [Route("chat")]
+        public ActionResult GetChat([Microsoft.AspNetCore.Mvc.FromBody] System.Text.Json.JsonElement userParams)
+        {
+            var usernameFrom = userParams.GetProperty("usernamefrom").ToString();
+            var usernameTo = userParams.GetProperty("usernameto").ToString();
 
-        //    var userIDFrom = (new UserController(new LuvFinderContext(), _config)).UserIDByName(usernameFrom);
-        //    var userIDTo = (new UserController(new LuvFinderContext(), _config)).UserIDByName(usernameTo);
+            var userIDFrom = (new UserController(new LuvFinderContext(), _config)).UserIDByName(usernameFrom);
+            var userIDTo = (new UserController(new LuvFinderContext(), _config)).UserIDByName(usernameTo);
 
-        //    var messages = new List<LuvFinder_API.ViewModels.Message>();
+            var messages = new List<LuvFinder_ViewModels.Message>();
 
-        //    try
-        //    {
-        //         messages = db.UserMessages
-        //                    .Where(m =>
-        //                            m.FromId == userIDFrom && m.ToId == userIDTo ||
-        //                            m.ToId == userIDFrom && m.FromId == userIDTo)
-        //                    .OrderBy( m => m.Date)
-        //                    .Select(m => new LuvFinder_API.ViewModels.Message()
-        //                    {
-        //                        ID = m.Id,
-        //                        FromID = m.FromId,
-        //                        ToID = m.ToId,
-        //                        Text = m.Message,
-        //                        Date = m.Date,
-        //                        MessageRead = m.MessageRead ?? false,
-        //                        MessageReadDate = m.MessageReadDate.HasValue? m.MessageReadDate.Value : null,
-        //                        DisplayOnLeft = m.FromId == userIDFrom
-        //                    }).ToList();
-        //    }
-        //    catch (Exception exc)
-        //    {
-        //        return BadRequest(exc.Message);
-        //    }
+            try
+            {
+                messages = db.UserMessages
+                           .Where(m =>
+                                   m.FromId == userIDFrom && m.ToId == userIDTo ||
+                                   m.ToId == userIDFrom && m.FromId == userIDTo)
+                           .OrderBy(m => m.Date)
+                           .Select(m => new LuvFinder_ViewModels.Message()
+                           {
+                               ID = m.Id,
+                               FromID = m.FromId,
+                               ToID = m.ToId,
+                               Text = m.Message,
+                               Date = m.Date,
+                               MessageRead = m.MessageRead ?? false,
+                               MessageReadDate = m.MessageReadDate.HasValue ? m.MessageReadDate.Value : null,
+                               DisplayOnLeft = m.FromId == userIDFrom
+                           }).ToList();
+            }
+            catch (Exception exc)
+            {
+                return BadRequest(exc.Message);
+            }
 
-        //    return Ok(messages);
-        //}
+            return Ok(messages);
+        }
 
         [HttpPost]
         [Route("chatcount")]
