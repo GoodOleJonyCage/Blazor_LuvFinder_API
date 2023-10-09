@@ -7,7 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Controllers\SearchController.cs" />
     <Compile Remove="Controllers\UserPicController.cs" />
   </ItemGroup>
 

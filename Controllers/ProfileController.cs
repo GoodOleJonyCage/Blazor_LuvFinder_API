@@ -445,14 +445,20 @@ namespace LuvFinder_API.Controllers
         [Route("maritalstatuses")]
         public ActionResult MaritalStatuses()
         {
-            var lst = db.UserMaritalStatuses
-                        .Select(m => new LuvFinder_ViewModels.MaritalStatus()
-                        {
-                            Id = m.Id,
-                            Name = m.Status ?? string.Empty,
-                        }).ToList();
+            var lst = LoadMaritalStatuses();
 
             return Ok(lst);
+        }
+
+        [NonActionAttribute]
+        public List<MaritalStatus> LoadMaritalStatuses()
+        {
+            return db.UserMaritalStatuses
+                                    .Select(m => new LuvFinder_ViewModels.MaritalStatus()
+                                    {
+                                        Id = m.Id,
+                                        Name = m.Status ?? string.Empty,
+                                    }).ToList();
         }
 
         [HttpGet]

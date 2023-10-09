@@ -1,5 +1,4 @@
 ﻿using LuvFinder_API.Models;
-using LuvFinder_API.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -32,11 +31,12 @@ namespace LuvFinder_API.Controllers
         [Route("getsearchcriteria")]
         public ActionResult GetSearchCriteria()
         {
-            SearchCriteria vm = new SearchCriteria();
+            LuvFinder_ViewModels.SearchCriteria vm = new LuvFinder_ViewModels.SearchCriteria();
             try
             {
                 vm.Genders = new ProfileController(db, _config, _webHostEnvironment).LoadGenders();
                 vm.SeekingGenders = new ProfileController(db, _config, _webHostEnvironment).LoadGenders();
+                vm.MaritalStatuses = new ProfileController(db, _config, _webHostEnvironment).LoadMaritalStatuses();
                 for (int i = 1; i < 100; i++)
                 {
                     vm.MinAge.Add(i);
@@ -57,8 +57,8 @@ namespace LuvFinder_API.Controllers
         [Route("search")]
         public ActionResult GetSearchCriteria([FromBody] System.Text.Json.JsonElement param)
         {
-            var vm = JsonConvert.DeserializeObject<SearchCriteria>(param.GetProperty("vm").ToString());
-            vm.Results = new List<ViewModels.UserInfo>();//clear search results
+            var vm = JsonConvert.DeserializeObject<LuvFinder_ViewModels.SearchCriteria>(param.GetProperty("vm").ToString());
+            vm.Results = new List<LuvFinder_ViewModels.UserInfo>();//clear search results
             var lstErrors = new List<string>();
             
             try
@@ -93,10 +93,11 @@ namespace LuvFinder_API.Controllers
                            where
                            i.GenderId == (vm.SelectedGender == 0 ? i.GenderId : vm.SelectedGender) &&
                            i.SeekingGenderId == (vm.SelectedSeekingGender == 0 ? i.SeekingGenderId : vm.SelectedSeekingGender) &&
+                           i.MaritalStatusId == (vm.SelectedMaritalStatus == 0 ? i.MaritalStatusId : vm.SelectedMaritalStatus) &&
                            i.CountryId == (vm.CountryID > 0 ? vm.CountryID : i.CountryId) &&
                            i.RegionId == (vm.RegionID > 0 ? vm.RegionID : i.RegionId ) &&
                            i.CityId == (vm.CityID > 0 ? vm.CityID : i.CityId ) 
-                           select new ViewModels.UserInfo()
+                           select new LuvFinder_ViewModels.UserInfo()
                            {
                                UserID = u.Id,
                                UserName = u.Username,
