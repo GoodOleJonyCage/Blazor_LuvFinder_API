@@ -137,85 +137,85 @@ namespace LuvFinder_API.Controllers
             return Ok(lstProfileQuestions);
         }
 
-        //[HttpGet]
-        //[Route("countries")]
-        //public ActionResult Countries()
-        //{
+        [HttpGet]
+        [Route("countries")]
+        public ActionResult Countries()
+        {
 
-        //    var lst = db.Countries.Select(c => new LuvFinder_ViewModels.Country()
-        //    {
-        //        ID = c.Id,
-        //        Name = c.Name
-        //    }).ToList();
+            var lst = db.Countries.Select(c => new LuvFinder_ViewModels.Country()
+            {
+                ID = c.Id,
+                Name = c.Name
+            }).ToList();
 
-        //    return Ok(lst);
-        //}
+            return Ok(lst);
+        }
 
-        //[HttpPost]
-        //[Route("regions")]
-        //public ActionResult Regions([Microsoft.AspNetCore.Mvc.FromBody] System.Text.Json.JsonElement userParams)
-        //{
-        //    var countryid = Int32.Parse(userParams.GetProperty("countryid").ToString());
-        //    var lst = db.Regions
-        //        .Where( r => r.CountryId == countryid)
-        //        .Select(c => new LuvFinder_ViewModels.Region()
-        //    {
-        //        ID = c.Id,
-        //        Name = c.Name
-        //    }).ToList();
+        [HttpPost]
+        [Route("regions")]
+        public ActionResult Regions([Microsoft.AspNetCore.Mvc.FromBody] System.Text.Json.JsonElement userParams)
+        {
+            var countryid = Int32.Parse(userParams.GetProperty("countryid").ToString());
+            var lst = db.Regions
+                .Where(r => r.CountryId == countryid)
+                .Select(c => new LuvFinder_ViewModels.Region()
+                {
+                    ID = c.Id,
+                    Name = c.Name
+                }).ToList();
 
-        //    return Ok(lst);
-        //}
+            return Ok(lst);
+        }
 
-        //[HttpPost]
-        //[Route("citiesbyname")]
-        //public ActionResult CitiesByName([Microsoft.AspNetCore.Mvc.FromBody] System.Text.Json.JsonElement userParams)
-        //{
-        //    var regionid = Int32.Parse(userParams.GetProperty("regionid").ToString());
-        //    var cityname = userParams.GetProperty("cityname").ToString();
-        //    var lst = new List<LuvFinder_ViewModels.City>();
-        //    try
-        //    {
-        //         lst = db.Cities.Where(c =>
-        //                        c.RegionId == regionid &&
-        //                        c.Name.StartsWith(cityname))
-        //                .Select(c => new LuvFinder_ViewModels.City()
-        //                {
-        //                    ID = c.Id,
-        //                    Name = c.Name
-        //                }).ToList();
+        [HttpPost]
+        [Route("citiesbyname")]
+        public ActionResult CitiesByName([Microsoft.AspNetCore.Mvc.FromBody] System.Text.Json.JsonElement userParams)
+        {
+            var regionid = Int32.Parse(userParams.GetProperty("regionid").ToString());
+            var cityname = userParams.GetProperty("cityname").ToString();
+            var lst = new List<LuvFinder_ViewModels.City>();
+            try
+            {
+                lst = db.Cities.Where(c =>
+                               c.RegionId == regionid &&
+                               c.Name.StartsWith(cityname))
+                       .Select(c => new LuvFinder_ViewModels.City()
+                       {
+                           ID = c.Id,
+                           Name = c.Name
+                       }).ToList();
 
-        //    }
-        //    catch (Exception)
-        //    {
+            }
+            catch (Exception)
+            {
 
 
-        //    }            
+            }
 
-        //    return Ok(lst);
-        //}
+            return Ok(lst);
+        }
 
-        //[HttpPost]
-        //[Route("cities")]
-        //public ActionResult Cities([Microsoft.AspNetCore.Mvc.FromBody] System.Text.Json.JsonElement userParams)
-        //{
-        //    var regionid = Int32.Parse(userParams.GetProperty("regionid").ToString());
-        //    var lst = new List<LuvFinder_ViewModels.City>();
-        //    try
-        //    {
-        //        lst = db.Cities.Where(c => c.RegionId == regionid)
-        //               .Select(c => new LuvFinder_ViewModels.City()
-        //               {
-        //                   ID = c.Id,
-        //                   Name = c.Name
-        //               }).ToList();
-        //    }
-        //    catch (Exception)
-        //    {
+        [HttpPost]
+        [Route("cities")]
+        public ActionResult Cities([Microsoft.AspNetCore.Mvc.FromBody] System.Text.Json.JsonElement userParams)
+        {
+            var regionid = Int32.Parse(userParams.GetProperty("regionid").ToString());
+            var lst = new List<LuvFinder_ViewModels.City>();
+            try
+            {
+                lst = db.Cities.Where(c => c.RegionId == regionid)
+                       .Select(c => new LuvFinder_ViewModels.City()
+                       {
+                           ID = c.Id,
+                           Name = c.Name
+                       }).ToList();
+            }
+            catch (Exception)
+            {
 
-        //    }
-        //    return Ok(lst);
-        //}
+            }
+            return Ok(lst);
+        }
 
         [HttpPost]
         [Route("userinfo")]
