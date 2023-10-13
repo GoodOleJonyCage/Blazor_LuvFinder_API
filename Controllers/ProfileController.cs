@@ -88,13 +88,13 @@ namespace LuvFinder_API.Controllers
             return lst;
         }
 
-        //[HttpGet]
-        //[Route("profilequestionnaire")]
-        //public ActionResult ProfileQuestionnaire()
-        //{
-        //    List<ProfileQuestion> lst = GetProfileQuestions();
-        //    return Ok(lst);
-        //}
+        [HttpGet]
+        [Route("profilequestionnaire")]
+        public ActionResult ProfileQuestionnaire()
+        {
+            List<ProfileQuestion> lst = GetProfileQuestions();
+            return Ok(lst);
+        }
 
         [HttpPost]
         [Route("userprofile")]
@@ -258,13 +258,13 @@ namespace LuvFinder_API.Controllers
             return user;
         }
 
-        //[HttpGet]
-        //[Route("initializeduserinfo")]
-        //public ActionResult InitializedUserInfo()
-        //{
-        //    //return an initialized object to instantiate the vm
-        //    return Ok(new LuvFinder_ViewModels.UserInfo());
-        //}
+        [HttpGet]
+        [Route("initializeduserinfo")]
+        public ActionResult InitializedUserInfo()
+        {
+            //return an initialized object to instantiate the vm
+            return Ok(new LuvFinder_ViewModels.UserInfo());
+        }
 
         [HttpPost]
         [Route("saveprofile")]
@@ -274,7 +274,7 @@ namespace LuvFinder_API.Controllers
             var vm = JsonConvert.DeserializeObject<List<LuvFinder_ViewModels.ProfileQuestion>>(param.GetProperty("vm").ToString());
             var vminfo = JsonConvert.DeserializeObject<LuvFinder_ViewModels.UserInfo>(param.GetProperty("info").ToString());
             var userID = (new UserController(new LuvFinderContext(), _config)).UserIDByName(username);
-
+             
             List<string> lstErrors = new List<string>();
 
             if (userID == 0)
@@ -390,12 +390,10 @@ namespace LuvFinder_API.Controllers
                 if (!vm.Any(q => q.Question.Error.Length > 0))//no errors found
                 {
                     db.UserProfiles.RemoveRange(db.UserProfiles.Where(u => u.UserId == userID).ToList());
-
                     vm.ToList().ForEach(question =>
                     {
                         if (question.Question.Answers.Count == 0)
                         {
-
                             db.UserProfiles.Add(new UserProfile()
                             {
                                 UserId = userID,
@@ -416,7 +414,6 @@ namespace LuvFinder_API.Controllers
                                     Selected = answer.Selected
                                 });
                             });
-
                     });
 
                     db.SaveChanges();
@@ -795,5 +792,39 @@ namespace LuvFinder_API.Controllers
             return Ok(count);
         }
 
+
+        [HttpPost]
+        [Route("upload")]
+        public ActionResult Upload()
+        {
+            var username = Request.Form["username"][0];
+            var imgbytes = Request.Form["bytes"][0];
+
+            var userID = (new UserController(new LuvFinderContext(), _config)).UserIDByName(username);
+
+            try
+            {
+                try
+                {
+                    db.UserProfilePicsDbs.Add(new UserProfilePicsDb()
+                    {
+                        UserId = userID,
+                        ImageData = Convert.FromBase64String(imgbytes)
+                    });
+                    db.SaveChanges();
+                }
+                catch (Exception exc)
+                {
+
+                    return BadRequest(exc.Message);
+                }
+                
+            }
+            catch (Exception exc)
+            {
+                return BadRequest(exc.Message);
+            }
+            return Ok("Uploaded");
+        }
     }
 }
