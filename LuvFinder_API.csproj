@@ -27,7 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LuvFinder_ViewModels\LuvFinder_ViewModels.csproj" />
+    <ProjectReference Include="..\Blazor_LuvFinder_ViewModels\LuvFinder_ViewModels.csproj" />
   </ItemGroup>
 
 </Project>
